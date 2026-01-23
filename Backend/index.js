@@ -14,7 +14,6 @@ app.use(express.json());
 app.use(cookieParser());//Reads cookies from request
 app.use("/api/auth",authRouter);//Registers authentication routes. Acts as a route prefix
 
-
 app.listen(PORT, async ()=>{
     await db_Connection();
     console.log(`Server is running on port ${PORT}`);
