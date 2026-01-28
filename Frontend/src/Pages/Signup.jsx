@@ -13,6 +13,7 @@ function Signup() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading]=useState(false);
 const [error, setError]=useState("");
 
     const handleSignup = async (e) => {
@@ -21,6 +22,7 @@ const [error, setError]=useState("");
         setName("");
         setPassword("");
         setError("");
+        setLoading(true);
         try {
             let result = await axios.post(`${serverUrl}/api/auth/signup`, {
                 name,
@@ -28,11 +30,11 @@ const [error, setError]=useState("");
                 password
             }, { withCredentials: true });
             console.log(result);
-
+setLoading(false);
         } catch (error) {
             console.log(error);
             setError(error.response.data.message);
-
+setLoading(false);
         }
     }
     return (
@@ -57,9 +59,9 @@ const [error, setError]=useState("");
                 {
                     error && <p className="text-red-500 font-bold">*{error}</p>
                 }
-                <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold bg-white rounded-full text-[17px] cursor-pointer">Sign Up</button>
+                <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold bg-white rounded-full text-[17px] cursor-pointer" disabled={loading}> {loading?"Loading...":"Sign Up"}</button>
 
-                <p className="text-[white] text-[18px] "> Already have an account ? <span className="text-blue-400 cursor-pointer" onClick={() => navigate("/login")}>Sign In</span> </p>
+                <p className="text-[white] text-[18px] "> Already have an account ? <span className="text-blue-400 cursor-pointer" onClick={() => navigate("/signin")}>Sign In</span> </p>
             </form>
         </div>
     );

@@ -13,23 +13,26 @@ function Signin() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+const [loading, setLoading]=useState(false);
 
     const handleSignIn = async (e) => {
         e.preventDefault();
         setEmail("");
         setPassword("");
         setError("");
+        setLoading(true);
         try {
-            let result = await axios.post(`${serverUrl}/api/auth/login`, {
+            let result = await axios.post(`${serverUrl}/api/auth/signin`, {
                 email,
                 password
             }, { withCredentials: true });
             console.log(result);
+            setLoading(false);
 
         } catch (error) {
+            setLoading(false);
             console.log(error);
             setError(error.response.data.message);
-
         }
     }
     return (
@@ -40,9 +43,6 @@ function Signin() {
                         Virtual Assistant
                     </span>
                 </h1>
-
-
-
 
                 <input type="email" placeholder="Enter Your Email" className=" w-full h-[40px] outline-none border-2 border-white bg-transparent text-white placeholder-gray-400 px-[10px] py-[10px] rounded-2xl text-[18px]" required value={email} onChange={(e) => setEmail(e.target.value)} />
 
@@ -57,7 +57,7 @@ function Signin() {
                 {
                     error && <p className="text-red-500 font-bold">*{error}</p>
                 }
-                <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold bg-white rounded-full text-[17px] cursor-pointer">Sign In</button>
+                <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold bg-white rounded-full text-[17px] cursor-pointer" disabled={loading}> {loading?"Loading...":"Sign In"}</button>
 
                 <p className="text-[white] text-[18px] "> Want to create an account ? <span className="text-blue-400 cursor-pointer" onClick={() => navigate("/signup")}>Sign Up</span> </p>
             </form>
