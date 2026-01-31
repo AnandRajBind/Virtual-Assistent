@@ -8,7 +8,7 @@ import axios from "axios";
 
 function Signin() {
     const [showPassword, setShowPassword] = useState(false);
-    const { serverUrl } = useContext(userDataContext);
+    const { serverUrl, userData, setUserData } = useContext(userDataContext);
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,8 +17,6 @@ const [loading, setLoading]=useState(false);
 
     const handleSignIn = async (e) => {
         e.preventDefault();
-        setEmail("");
-        setPassword("");
         setError("");
         setLoading(true);
         try {
@@ -26,12 +24,14 @@ const [loading, setLoading]=useState(false);
                 email,
                 password
             }, { withCredentials: true });
-            console.log(result);
+            setUserData(result.data);
             setLoading(false);
-
+            setEmail("");
+            setPassword("");
+            navigate("/")
         } catch (error) {
             setLoading(false);
-            console.log(error);
+            setUserData(null);
             setError(error.response.data.message);
         }
     }
