@@ -2,13 +2,16 @@
 import { useState } from 'react';
 import { createContext } from 'react';
 import axios from 'axios';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const userDataContext = createContext();
 
 function UserContext({ children }) {
-  const [userData, setUserData] = useState(null);
   const serverUrl = "http://localhost:8000";
+  const [userData, setUserData] = useState(null);
+  const [frontendImage, setFrontendImage] = useState(null);
+  const [backendImage, setBackendImage] = useState(null);
+const [selectedImage, setSelectedImage] = useState(null);
   const handleCurrentUser = async () => {
     try {
       const result = await axios.get(`${serverUrl}/api/user/current`, { withCredentials: true });
@@ -16,7 +19,6 @@ function UserContext({ children }) {
       console.log(result.data);
     } catch (error) {
       console.log(error);
-
     }
   }
 
@@ -28,15 +30,15 @@ function UserContext({ children }) {
     serverUrl,
     userData,
     setUserData,
-    handleCurrentUser
+    handleCurrentUser,
+    backendImage, setBackendImage,
+    frontendImage, setFrontendImage,
+    selectedImage, setSelectedImage
   }
-
-
-
   return (
-       <userDataContext.Provider value={value}>
-        {children}
-      </userDataContext.Provider>
+    <userDataContext.Provider value={value}>
+      {children}
+    </userDataContext.Provider>
   )
 }
 export default UserContext;
