@@ -12,13 +12,11 @@ import { userDataContext } from '../context/UserContext.jsx'
 import UserContext from '../context/UserContext.jsx'
 import { useNavigate } from 'react-router-dom'
 import { RiImageAddFill } from "react-icons/ri";
-
+import { IoArrowBack } from "react-icons/io5";
 
 
 function Customize() {
-const navigate = useNavigate(); 
-
-
+    const navigate = useNavigate();
     const { serverUrl,
         userData,
         setUserData,
@@ -29,13 +27,13 @@ const navigate = useNavigate();
     } = useContext(userDataContext)
     const inputImage = useRef();
     const handleImageChange = (e) => {
-
         const file = e.target.files[0];
         setBackendImage(file);
         setFrontendImage(URL.createObjectURL(file));
     }
     return (
         <div className='w-full h-[100vh] bg-gradient-to-t from-[black] to-[#020236] flex justify-center items-center  flex-col'>
+               <IoArrowBack  className='absolute top-[30px] left-[30px] text-white w-[25px] h-[25px] cursor-pointer' onClick={()=> navigate("/")}/>
             <h1 className='text-white mb-[30px] text-[30px] text-center'>Select Your <span className='text-blue-300'>Assistant Image</span> </h1>
             <div className='w-full max-w-[900px] flex justify-center items-center flex-wrap gap-[15px]'>
                 <Card image={image1} />
