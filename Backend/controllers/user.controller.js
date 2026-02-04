@@ -25,13 +25,11 @@ export const updateAssistant = async (req, res) => {
         } else {
             assistantImage = assistantImageUrl;
         }
-
         const user = await User.findByIdAndUpdate(req.userId, {
             assistantName,
             assistantImage
         }, { new: true }).select('-password');
         return res.status(200).json(user);
-
     } catch (error) {
 
         return res.status(400).json({ message: 'update assistant error' });
@@ -41,24 +39,18 @@ export const updateAssistant = async (req, res) => {
 export const askToAssistant = async (req, res) => {
     try {
         const { command } = req.body;
-
         const user = await User.findById(req.userId);
         const userName = user.name;
         const assistantName = user.assistantName;
-
         const result = await geminiResponse(command, assistantName, userName);
-
         const jsonMatch = result.match(/{[\s\S]*}/);
-
         if (!jsonMatch) {
             return res.status(400).json({
                 response: "sorry , i can t understand"
             });
         }
-
         const gemResult = JSON.parse(jsonMatch[0]);
         const type = gemResult.type;
-
         switch (type) {
             case "get-date":
                 return res.json({
@@ -66,14 +58,12 @@ export const askToAssistant = async (req, res) => {
                     userInput: gemResult.userInput,
                     response: `The current Date is ${moment().format('YYYY-MM-DD')}`
                 });
-
             case "get-time":
                 return res.json({
                     type,
                     userInput: gemResult.userInput,
                     response: `The current time is ${moment().format('HH:mm:ss A')}`
                 });
-
             case "get-day":
                 return res.json({
                     type,
@@ -99,7 +89,6 @@ export const askToAssistant = async (req, res) => {
                     userInput: gemResult.userInput,
                     response: gemResult.response,
                 });
-
             default:
                 return res.status(400).json({
                     response: "sorry , i can t understand"
@@ -113,6 +102,12 @@ export const askToAssistant = async (req, res) => {
         });
     }
 };
+
+
+
+
+
+
 
 
 
