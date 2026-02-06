@@ -20,6 +20,7 @@ export default function Home() {
       console.log(error);
     }
   };
+// setup web speech api to listen to user commands and send them to backend for processing
 
 
 
