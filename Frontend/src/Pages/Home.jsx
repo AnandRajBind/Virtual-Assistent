@@ -2,6 +2,7 @@ import React from 'react'
 import { useContext } from 'react'
 import { userDataContext } from '../context/UserContext.jsx'
 import { useNavigate } from 'react-router-dom';
+
 import axios from 'axios';
 
 import { useEffect } from 'react';
@@ -20,10 +21,7 @@ export default function Home() {
       console.log(error);
     }
   };
-// setup web speech api to listen to user commands and send them to backend for processing
-
-
-
+// setup web speech api to listen to user commands(also convert speech to text) and send them to backend for processing.
   // Speech Recognition Setup
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -32,9 +30,7 @@ export default function Home() {
     recognition.continuous = true;
     recognition.lang = "en-US";
 
-
     recognition.onresult = async (e) => {
-
       const transcript = e.results[e.results.length - 1][0].transcript.trim();
 
       if (transcript.toLowerCase().includes(userData.assistantName.toLowerCase())) {
