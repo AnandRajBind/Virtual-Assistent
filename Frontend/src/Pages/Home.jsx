@@ -27,6 +27,17 @@ export default function Home() {
     }
   };
 
+const startRecognition = () => {
+  try {
+    recognitionRef.current?.start();
+    setListening(true);
+  } catch (error) {
+    if (!error.message.includes("start")) {
+      console.error("Recognition error:", error);
+    }
+  }
+};
+
   // convert text to speech
 
   const speak = (text) => {
@@ -35,7 +46,7 @@ export default function Home() {
     isSpeakingRef.current = true;
     utterence.onend = () => {
       isSpeakingRef.current = false;
-      recognitionRef.current?.start();
+        startRecognition();
     };
     synth.speak(utterence);
   }
@@ -155,9 +166,7 @@ export default function Home() {
 
     recognition.onresult = async (e) => {
       const transcript = e.results[e.results.length - 1][0].transcript.trim();
-
       if (transcript.toLowerCase().includes(userData.assistantName.toLowerCase())) {
-
 
         recognition.stop();
         isRecognizingRef.current = false;
