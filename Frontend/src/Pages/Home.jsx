@@ -1,5 +1,5 @@
 import React from 'react'
-import { useEffect, useState, useRef ,useContext} from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { userDataContext } from '../context/UserContext.jsx'
 import { useNavigate } from 'react-router-dom';
 
@@ -14,7 +14,6 @@ export default function Home() {
   const recognitionRef = useRef(null);
   const synth = window.speechSynthesis;
 
-
   const handleLogout = async () => {
     try {
       const result = await axios.post(`${serverUrl}/api/auth/logout`, { withCredentials: true });
@@ -26,38 +25,38 @@ export default function Home() {
     }
   };
 
-const startRecognition = () => {
-  try {
-    recognitionRef.current?.start();
-    setListening(true);
-  } catch (error) {
-    if (!error.message.includes("start")) {
-      console.error("Recognition error:", error);
+  const startRecognition = () => {
+    try {
+      recognitionRef.current?.start();
+      setListening(true);
+    } catch (error) {
+      if (!error.message.includes("start")) {
+        console.error("Recognition error:", error);
+      }
     }
-  }
-};
+  };
 
   // convert text to speech 
 
-const speak = (text) => {
-  const utterence = new SpeechSynthesisUtterance(text);
-  utterence.lang = "hi-IN";
+  const speak = (text) => {
+    const utterence = new SpeechSynthesisUtterance(text);
+    utterence.lang = "hi-IN";
 
-  const voices = window.speechSynthesis.getVoices();
-  const hindiVoice = voices.find(v => v.lang === "hi-IN");
+    const voices = window.speechSynthesis.getVoices();
+    const hindiVoice = voices.find(v => v.lang === "hi-IN");
 
-  if (hindiVoice) {
-    utterence.voice = hindiVoice;
-  }
+    if (hindiVoice) {
+      utterence.voice = hindiVoice;
+    }
 
-  isSpeakingRef.current = true;
-  utterence.onend = () => {
-    isSpeakingRef.current = false;
-    startRecognition();
+    isSpeakingRef.current = true;
+    utterence.onend = () => {
+      isSpeakingRef.current = false;
+      startRecognition();
+    };
+
+    synth.speak(utterence);
   };
-
-  synth.speak(utterence);
-};
 
 
 
@@ -171,22 +170,46 @@ const speak = (text) => {
       }
     };
 
-    recognition.onresult = async (e) => {
-      const transcript = e.results[e.results.length - 1][0].transcript.trim();
-      if (transcript.toLowerCase().includes(userData.assistantName.toLowerCase())) {
+    // old logic without safeRecognition wrapper 
 
+    // recognition.onresult = async (e) => {
+    //   const transcript = e.results[e.results.length - 1][0].transcript.trim();
+    //   if (transcript.toLowerCase().includes(userData.assistantName.toLowerCase())) {
+
+    //     recognition.stop();
+    //     isRecognizingRef.current = false;
+    //     setListening(false);
+    //     const data = await getGeminiResponse(transcript);
+    //     console.log(data);
+    //     // speak(data.response); 
+    //     handleCommand(data);
+    //   }
+    //   console.log("heard:", transcript);
+    // }
+
+
+
+    let lastCallTime = 0;
+
+    recognition.onresult = async (e) => {
+      const now = Date.now();
+      if (now - lastCallTime < 5000) return; // 5 sec gap
+
+      lastCallTime = now;
+
+      const transcript = e.results[e.results.length - 1][0].transcript.trim();
+
+      if (transcript.toLowerCase().includes(userData.assistantName.toLowerCase())) {
         recognition.stop();
-        isRecognizingRef.current = false;
-        setListening(false);
+
         const data = await getGeminiResponse(transcript);
-        console.log(data);
-        // speak(data.response); 
+
+        if (!data) return;
+
+        speak(data.response);
         handleCommand(data);
       }
-      console.log("heard:", transcript);
-    }
-
-
+    };
     const fallback = setInterval(() => {
       if (!isSpeakingRef.current && !isRecognizingRef.current) {
 
