@@ -1,11 +1,10 @@
 import React from 'react'
-import { useContext } from 'react'
+import { useEffect, useState, useRef ,useContext} from 'react';
 import { userDataContext } from '../context/UserContext.jsx'
 import { useNavigate } from 'react-router-dom';
 
 import axios from 'axios';
 
-import { useEffect, useState, useRef } from 'react';
 
 export default function Home() {
   const { userData, serverUrl, setUserData, getGeminiResponse } = useContext(userDataContext);
@@ -38,19 +37,27 @@ const startRecognition = () => {
   }
 };
 
-  // convert text to speech
+  // convert text to speech 
 
-  const speak = (text) => {
-    const utterence = new SpeechSynthesisUtterance(text);
+const speak = (text) => {
+  const utterence = new SpeechSynthesisUtterance(text);
+  utterence.lang = "hi-IN";
 
-    isSpeakingRef.current = true;
-    utterence.onend = () => {
-      isSpeakingRef.current = false;
-        startRecognition();
-    };
-    synth.speak(utterence);
+  const voices = window.speechSynthesis.getVoices();
+  const hindiVoice = voices.find(v => v.lang === "hi-IN");
+
+  if (hindiVoice) {
+    utterence.voice = hindiVoice;
   }
 
+  isSpeakingRef.current = true;
+  utterence.onend = () => {
+    isSpeakingRef.current = false;
+    startRecognition();
+  };
+
+  synth.speak(utterence);
+};
 
 
 
