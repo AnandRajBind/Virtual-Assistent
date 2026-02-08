@@ -15,6 +15,7 @@ export default function Home() {
   const [aiText, setAiText] = useState("");
   const isSpeakingRef = useRef(false);
   const recognitionRef = useRef(null);
+  const isRecognizingRef = useRef(false);
   const synth = window.speechSynthesis;
 
   const handleLogout = async () => {
@@ -54,16 +55,12 @@ export default function Home() {
 
     isSpeakingRef.current = true;
     utterence.onend = () => {
+      setAiText("");
       isSpeakingRef.current = false;
       startRecognition();
     };
-
     synth.speak(utterence);
   };
-
-
-
-
   const handleCommand = async (data) => {
     const { type, userInput, response } = data;
     // GOOGLE SEARCH
@@ -104,10 +101,6 @@ export default function Home() {
 
   }
 
-
-
-
-
   // setup web speech api to listen to user commands(also convert speech to text) and send them to backend for processing.
   // Speech Recognition Setup
   useEffect(() => {
@@ -116,10 +109,8 @@ export default function Home() {
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.lang = "en-US";
-
-
+    recognition.interimResults = false;
     recognitionRef.current = recognition;
-    const isRecognizingRef = { current: false };
 
     const safeRecognition = () => {
       if (!isSpeakingRef.current && !isRecognizingRef.current) {
@@ -127,7 +118,6 @@ export default function Home() {
           recognition.start();
           console.log("Recognition requested to start");
         }
-
         catch (error) {
           if (error.name !== "InvalidStateError") {
             console.log("Start Error :", error);
@@ -240,6 +230,9 @@ export default function Home() {
       <h1 className='text-white text-[30px] font-semibold'>{userData?.assistantName}</h1>
       {!aiText && <img src={userIamge} alt="" className='h-[200px] ' />}
       {aiText && <img src={aiImg} alt="" className='h-[200px] ' />}
+
+      <h1 className='text-white text-[15px] font-bold text-wrap'>{userText ? userText : aiText ? aiText : null}</h1>
+
     </div>
   )
 }

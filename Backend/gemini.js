@@ -28,8 +28,8 @@ Instructions:
 - "response": a short voice-friendly reply.
 
 Type meanings:
-- "general": if it's a factual or informational question.
-- "google_search": if user wants to search something on Google.
+- "general": if it's a factual or informational question. aur agr koi aisa question puchta hai jiska answer tum directly de sakte ho bina google search kiye. usko bhi general me daal dena. jaise "who is the president of USA?" iska answer tum directly de sakte ho to isko general me daal dena.
+- "google_search": if user wants to search something on Google. agr koi user tumse koi aisa question puchta hai jo tumhe nhi pata hai use google se search karke user ko answer dena . aur usko google_search me daal dena.
 - "youtube_search": if user wants to search something on YouTube.
 - "youtube_play": if user wants to directly play a video or song.
 - "calculator_open": if user wants to open a calculator.
