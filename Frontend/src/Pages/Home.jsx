@@ -2,7 +2,8 @@ import React from 'react'
 import { useEffect, useState, useRef, useContext } from 'react';
 import { userDataContext } from '../context/UserContext.jsx'
 import { useNavigate } from 'react-router-dom';
-
+import aiImg from "../assets/ai.gif";
+import userIamge from "../assets/user.gif";
 import axios from 'axios';
 
 
@@ -10,6 +11,8 @@ export default function Home() {
   const { userData, serverUrl, setUserData, getGeminiResponse } = useContext(userDataContext);
   const navigate = useNavigate();
   const [listening, setListening] = useState(false);
+  const [userText, setUserText] = useState("");
+  const [aiText, setAiText] = useState("");
   const isSpeakingRef = useRef(false);
   const recognitionRef = useRef(null);
   const synth = window.speechSynthesis;
@@ -194,25 +197,23 @@ export default function Home() {
     recognition.onresult = async (e) => {
       const now = Date.now();
       if (now - lastCallTime < 5000) return; // 5 sec gap
-
       lastCallTime = now;
-
       const transcript = e.results[e.results.length - 1][0].transcript.trim();
 
       if (transcript.toLowerCase().includes(userData.assistantName.toLowerCase())) {
+        setAiText("");
+        setUserText(transcript);
         recognition.stop();
-
         const data = await getGeminiResponse(transcript);
-
         if (!data) return;
-
         speak(data.response);
         handleCommand(data);
+        setAiText(data.response);
+        setUserText("");
       }
     };
     const fallback = setInterval(() => {
       if (!isSpeakingRef.current && !isRecognizingRef.current) {
-
         safeRecognition();
       }
     }, 10000);
@@ -237,6 +238,8 @@ export default function Home() {
         <img src={userData?.assistantImage} alt="" className='h-full object-cover' />
       </div>
       <h1 className='text-white text-[30px] font-semibold'>{userData?.assistantName}</h1>
+      {!aiText && <img src={userIamge} alt="" className='h-[200px] ' />}
+      {aiText && <img src={aiImg} alt="" className='h-[200px] ' />}
     </div>
   )
 }
