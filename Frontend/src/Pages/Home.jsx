@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import aiImg from "../assets/ai.gif";
 import userIamge from "../assets/user.gif";
 import axios from 'axios';
+import { RiMenuFill } from "react-icons/ri";
+import { RxCross1 } from "react-icons/rx";
+
+
 
 
 export default function Home() {
@@ -218,13 +222,31 @@ export default function Home() {
 
   return (
     <div className='w-full h-[100vh] bg-gradient-to-t from-[black] to-[#020236] flex justify-center items-center  flex-col p-[20px] gap-[15px]'>
+      <RiMenuFill className='lg:hidden text-white absolute top-[20px] right-[20px] w-[25px] h-[25px]' />
 
-      <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold absolute top-[20px] right-[20px]  bg-white rounded-full text-[17px] cursor-pointer" onClick={handleLogout} >Logout </button>
 
-      <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold absolute top-[100px] right-[20px] bg-white rounded-full text-[17px] cursor-pointer px-[20px] py-[10px]" onClick={() => navigate("/customize")}>Customize Your Assistant</button>
+      <div className='absolute top-0 w-full h-full bg-[#000000053] backdrop-blur-lg p-[20px] flex flex-col gap-[20px] items-start '>
+
+        <RxCross1 className='lg:hidden text-white absolute top-[20px] right-[20px] w-[25px] h-[25px]' />
+
+        <button className="min-w-[150px] h-[50px] text-black font-semibold  bg-white rounded-full text-[17px] cursor-pointer" onClick={handleLogout} >Logout </button>
+        <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold  bg-white rounded-full text-[17px] cursor-pointer px-[20px] py-[10px]" onClick={() => navigate("/customize")}>Customize Your Assistant</button>
+
+        <div className='w-full h-[2px] bg-gray-400'></div>
+        <h1 className='text-white font-semibold text-[19px]'>History</h1>
+
+        <div className='w-full h-[60%] overflow-auto flex flex-col gap-[20px] items-start '> 
+          {userData.history?.map((his) => (<span  > {his} </span>))}
+          </div>
+      </div>
+
+      <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold absolute hidden lg:block  top-[20px] right-[20px]  bg-white rounded-full text-[17px] cursor-pointer" onClick={handleLogout} >Logout </button>
+
+
+      <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold absolute hidden lg:block  top-[100px] right-[20px] bg-white rounded-full text-[17px] cursor-pointer px-[20px] py-[10px]" onClick={() => navigate("/customize")}>Customize Your Assistant</button>
+
 
       <div className='w-[300px] h-[400px] flex justify-center items-center overflow-hidden rounded-4xl shadow-lg'>
-
         <img src={userData?.assistantImage} alt="" className='h-full object-cover' />
       </div>
       <h1 className='text-white text-[30px] font-semibold'>{userData?.assistantName}</h1>
@@ -232,7 +254,6 @@ export default function Home() {
       {aiText && <img src={aiImg} alt="" className='h-[200px] ' />}
 
       <h1 className='text-white text-[15px] font-bold text-wrap'>{userText ? userText : aiText ? aiText : null}</h1>
-
     </div>
   )
 }
