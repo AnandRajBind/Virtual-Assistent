@@ -17,6 +17,7 @@ export default function Home() {
   const [listening, setListening] = useState(false);
   const [userText, setUserText] = useState("");
   const [aiText, setAiText] = useState("");
+  const [ham, setHam] = useState(false);
   const isSpeakingRef = useRef(false);
   const recognitionRef = useRef(null);
   const isRecognizingRef = useRef(false);
@@ -34,6 +35,7 @@ export default function Home() {
   };
 
   const startRecognition = () => {
+    if(!isSpeakingRef.current && !isRecognizingRef.current) {
     try {
       recognitionRef.current?.start();
       setListening(true);
@@ -42,6 +44,7 @@ export default function Home() {
         console.error("Recognition error:", error);
       }
     }
+  }
   };
 
   // convert text to speech 
@@ -61,10 +64,17 @@ export default function Home() {
     utterence.onend = () => {
       setAiText("");
       isSpeakingRef.current = false;
+      setTimeout(() => {
+
       startRecognition();
+      }, 500); // slight delay to avoid immediate restart
     };
+    synth.cancel(); // stop any ongoing speech
     synth.speak(utterence);
   };
+
+
+
   const handleCommand = async (data) => {
     const { type, userInput, response } = data;
     // GOOGLE SEARCH
@@ -72,7 +82,6 @@ export default function Home() {
       const query = encodeURIComponent(userInput);
       window.open(`https://www.google.com/search?q=${query}`, "_blank");
     }
-
     // CALCULATOR
     if (type === "calculator_open") {
       window.open("https://www.google.com/search?q=calculator", "_blank");
@@ -184,6 +193,10 @@ export default function Home() {
     //   console.log("heard:", transcript);
     // }
 
+const greeting = new SpeechSynthesisUtterance(`Hello ${userData.name}, what can I help you with?`);
+greeting.lang = "hi-IN";
+
+window.speechSynthesis.speak(greeting);
 
 
     let lastCallTime = 0;
@@ -221,13 +234,12 @@ export default function Home() {
   }, [])
 
   return (
-    <div className='w-full h-[100vh] bg-gradient-to-t from-[black] to-[#020236] flex justify-center items-center  flex-col p-[20px] gap-[15px]'>
-      <RiMenuFill className='lg:hidden text-white absolute top-[20px] right-[20px] w-[25px] h-[25px]' />
+    <div className='w-full h-[100vh] bg-gradient-to-t from-[black] to-[#020236] flex justify-center items-center flex-col p-[20px] gap-[15px]'>
+      <RiMenuFill className='lg:hidden text-white absolute top-[20px] right-[20px] w-[25px] h-[25px]' onClick={() => setHam(true)}/>
 
+      <div className={`absolute top-0 w-full h-full bg-[#000000053] backdrop-blur-lg p-[20px] flex flex-col gap-[20px] items-start ${ham?"translate-x-0":"-translate-x-full"}     `}> 
 
-      <div className='absolute top-0 w-full h-full bg-[#000000053] backdrop-blur-lg p-[20px] flex flex-col gap-[20px] items-start '>
-
-        <RxCross1 className='lg:hidden text-white absolute top-[20px] right-[20px] w-[25px] h-[25px]' />
+        <RxCross1 className='lg:hidden text-white absolute top-[20px] right-[20px] w-[25px] h-[25px]' onClick={() => setHam(false)} />
 
         <button className="min-w-[150px] h-[50px] text-black font-semibold  bg-white rounded-full text-[17px] cursor-pointer" onClick={handleLogout} >Logout </button>
         <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold  bg-white rounded-full text-[17px] cursor-pointer px-[20px] py-[10px]" onClick={() => navigate("/customize")}>Customize Your Assistant</button>
@@ -235,9 +247,10 @@ export default function Home() {
         <div className='w-full h-[2px] bg-gray-400'></div>
         <h1 className='text-white font-semibold text-[19px]'>History</h1>
 
-        <div className='w-full h-[60%] overflow-auto flex flex-col gap-[20px] items-start '> 
-          {userData.history?.map((his) => (<span  > {his} </span>))}
-          </div>
+        <div className='w-full h-[400px]   overflow-y-auto flex flex-col   '>
+          {userData.history?.map((his) => (<span className='text-gray-200 text-[18px] truncate  mt-20px'> {his} </span>))}
+        </div>
+
       </div>
 
       <button className="min-w-[150px] mt-[25px] h-[50px] text-black font-semibold absolute hidden lg:block  top-[20px] right-[20px]  bg-white rounded-full text-[17px] cursor-pointer" onClick={handleLogout} >Logout </button>
